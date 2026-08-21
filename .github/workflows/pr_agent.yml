@@ -1,0 +1,45 @@
+name: Apex PR review
+
+on:
+  pull_request:
+    types: [labeled]
+  issue_comment:
+    types: [created, edited]
+
+concurrency:
+  group: apex-pr-review-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    if: >-
+      github.event.sender.type != 'Bot' &&
+      ((github.event_name == 'pull_request' && github.event.label.name == 'apex-review') ||
+       (github.event_name == 'issue_comment' && github.event.issue.pull_request))
+    runs-on: [self-hosted, apex]
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Review pull request
+        uses: docker://ghcr.io/ikkalabs/praas-agent:v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG__MODEL: openai/${{ vars.APEX_PR_MODEL }}
+          CONFIG__FALLBACK_MODELS: '["openai/${{ vars.APEX_PR_MODEL }}"]'
+          OPENAI__API_BASE: ${{ vars.APEX_OLLAMA_BASE_URL }}
+          OPENAI__KEY: ${{ secrets.APEX_OLLAMA_GATEWAY_TOKEN }}
+          CONFIG__CUSTOM_MODEL_MAX_TOKENS: "16384"
+          CONFIG__AI_TIMEOUT: "1800"
+          CONFIG__RESTRICTED_MODE: "true"
+          GITHUB_ACTION_CONFIG__AUTO_REVIEW: "true"
+          GITHUB_ACTION_CONFIG__AUTO_DESCRIBE: "true"
+          GITHUB_ACTION_CONFIG__AUTO_IMPROVE: "false"
+          IGNORE__GLOB: "[]"
+          PR_REVIEWER__EXTRA_INSTRUCTIONS: ""
+          PR_REVIEWER__ENABLE_MULTI_SUBAGENT_REVIEW: "true"
+          PR_CODE_SUGGESTIONS__SUGGESTIONS_SCORE_THRESHOLD: "7"
+          GITHUB_ACTION_CONFIG__PR_ACTIONS: >-
+            ["labeled"]
