@@ -16,7 +16,7 @@ on:
 jobs:
   review:
     name: "Review (${{ inputs.model }})"
-    runs-on: [self-hosted, apex]
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     permissions:
       contents: read
