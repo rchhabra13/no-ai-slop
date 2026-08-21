@@ -26,13 +26,13 @@ It also enforces the fundamentals that make writing good: Lead with the point wh
 
 Paste this into Claude Code, Codex, or your favorite AI harness:
 
-"Install this skill globally: [https://github.com/petergyang/no-ai-slop](https://github.com/petergyang/no-ai-slop)"
+"Install this skill globalhttps://github.com/petergyang/no-ai-slop](https://github.com/petergyang/no-ai-slop)"
 
 ## Use
 
 **1. Edit a draft.** Paste it and invoke the skill:
 
-```
+`
 /no-ai-slop
 
 [your draft]
